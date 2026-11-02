@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบสั่งงานกลุ่ม - Simple Work Tracker</title>
+  <style>
+    /* ตั้งค่าธีมเทาดำ + ฟ้าเทอร์ควอยซ์ */
+    body {
+      background-color: #121212;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #1e1e1e;
+      padding: 20px;
+      border-radius: 10px;
+      border: 1px solid #333;
+    }
+
+    h1 {
+      text-align: center;
+      color: #40E0D0;
+      margin-top: 0;
+    }
+
+    p.subtitle {
+      text-align: center;
+      color: #aaa;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    /* สไตล์ฟอร์มกรอกข้อมูล */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    input {
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #333;
+      background-color: #2a2a2a;
+      color: #fff;
+      font-size: 14px;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #40E0D0;
+    }
+
+    button {
+      padding: 10px;
+      border-radius: 5px;
+      border: none;
+      background-color: #40E0D0;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    button:hover {
+      background-color: #36c3b5;
+    }
+
+    /* สไตล์รายการงาน */
+    ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      background-color: #2a2a2a;
+      padding: 12px;
+      margin-bottom: 8px;
+      border-radius: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-left: 4px solid #40E0D0;
+    }
+
+    .task-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .task-title {
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .task-assignee {
+      font-size: 12px;
+      color: #40E0D0;
+      margin-top: 4px;
+    }
+
+    .delete-btn {
+      background-color: #ff4d4d;
+      color: #fff;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+
+    .delete-btn:hover {
+      background-color: #cc0000;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>ระบบสั่งงานและติดตามงานกลุ่ม</h1>
+    <p class="subtitle">วิชา: การพัฒนาเว็บร่วมกัน</p>
+
+    <!-- ฟอร์มสำหรับเพิ่มงาน -->
+    <div class="form-group">
+      <input type="text" id="taskInput" placeholder="กรอกขัองานที่ต้องทำ...">
+      <input type="text" id="nameInput" placeholder="กรอกชื่อผู้รับผิดชอบ...">
+      <button onclick="addTask()">เพิ่มรายการงาน</button>
+    </div>
+
+    <!-- แสดงรายการงาน -->
+    <ul id="taskList">
+      <!-- รายการงานจะมาแสดงตรงนี้ -->
+    </ul>
+  </div>
+
+  <script>
+    // ข้อมูลเริ่มต้นตัวอย่าง
+    let tasks = [
+      { title: "ออกแบบหน้าเว็บ", assignee: "สมชาย" },
+      { title: "เขียนโค้ด JavaScript", assignee: "สมหญิง" }
+    ];
+
+    // ฟังก์ชันแสดงรายการงานบนหน้าจอ
+    function renderTasks() {
+      const list = document.getElementById("taskList");
+      list.innerHTML = ""; // ล้างข้อมูลเก่าก่อนแสดงใหม่
+
+      tasks.forEach((item, index) => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <div class="task-info">
+            <span class="task-title">${item.title}</span>
+            <span class="task-assignee">ผู้รับผิดชอบ: ${item.assignee}</span>
+          </div>
+          <button class="delete-btn" onclick="deleteTask(${index})">ลบ</button>
+        `;
+        list.appendChild(li);
+      });
+    }
+
+    // ฟังก์ชันเพิ่มงานใหม่
+    function addTask() {
+      const taskInput = document.getElementById("taskInput");
+      const nameInput = document.getElementById("nameInput");
+
+      const taskValue = taskInput.value.trim();
+      const nameValue = nameInput.value.trim();
+
+      if (taskValue === "" || nameValue === "") {
+        alert("กรุณากรอกข้อมูลให้ครบถ้วนครับ");
+        return;
+      }
+
+      // เพิ่มข้อมูลลงในอาร์เรย์
+      tasks.push({ title: taskValue, assignee: nameValue });
+
+      // ล้างช่องกรอกข้อมูล
+      taskInput.value = "";
+      nameInput.value = "";
+
+      // อัปเดตการแสดงผล
+      renderTasks();
+    }
+
+    // ฟังก์ชันลบงาน
+    function deleteTask(index) {
+      tasks.splice(index, 1);
+      renderTasks();
+    }
+
+    // เรียกใช้งานครั้งแรกเมื่อเปิดหน้าเว็บ
+    renderTasks();
+  </script>
+
+</body>
+</html>
